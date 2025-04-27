@@ -11,6 +11,7 @@ const userSchemas = mongoose.Schema(
       required: true,
     },
     email: {
+      unique: true,
       type: String,
       required: true,
     },
@@ -30,10 +31,12 @@ const userSchemas = mongoose.Schema(
     },
     project: {
       type: [String],
-      required: true,
     },
   },
   {
     timestamps: true,
   }
 );
+
+const Users = mongoose.model("user", userSchemas);
+export default Users;
