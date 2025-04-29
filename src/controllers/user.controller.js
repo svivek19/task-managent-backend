@@ -1,13 +1,22 @@
 import Users from "../models/user.model.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const createUser = async (req, res) => {
+  const { email, password, ...otherFields } = req.body;
   try {
-    const existingUser = await Users.findOne({ email: req.body.email });
+    const existingUser = await Users.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "Email already in use." });
+      return res.status(400).json({ message: "User already exists" });
     }
 
-    const user = new Users(req.body);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const user = new Users({
+      email,
+      password: hashedPassword,
+      ...otherFields,
+    });
     const savedUser = await user.save();
 
     res.status(201).json(savedUser);
@@ -32,13 +41,31 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    if (user.password !== password) {
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_PRIVATE_KEY, {
+      algorithm: "HS256",
+      expiresIn: "1h",
+    });
+
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV,
+      sameSite: "Strict",
+      maxAge: 60 * 60 * 1000,
+    });
+
     res.status(200).json({
       message: "Login successful",
-      user,
+      // user: userWithoutPassword,
+      token,
     });
   } catch (error) {
     console.error(error);
