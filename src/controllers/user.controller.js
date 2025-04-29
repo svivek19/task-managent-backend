@@ -19,7 +19,10 @@ export const createUser = async (req, res) => {
     });
     const savedUser = await user.save();
 
-    res.status(201).json(savedUser);
+    const userResponse = savedUser.toObject();
+    delete userResponse.password;
+
+    res.status(201).json(userResponse);
   } catch (error) {
     if (error.code === 11000) {
       return res
@@ -57,11 +60,30 @@ export const loginUser = async (req, res) => {
 
     res.status(200).json({
       message: "Login successful",
-      // user: userWithoutPassword,
+      user: userWithoutPassword,
       token,
     });
   } catch (error) {
-    console.error(error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const getUser = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    const user = await Users.findById(userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
