@@ -55,13 +55,6 @@ export const loginUser = async (req, res) => {
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV,
-      sameSite: "Strict",
-      maxAge: 60 * 60 * 1000,
-    });
-
     res.status(200).json({
       message: "Login successful",
       // user: userWithoutPassword,
