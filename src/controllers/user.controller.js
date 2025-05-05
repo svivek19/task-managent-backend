@@ -87,3 +87,15 @@ export const getUser = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+export const getEmployees = async (req, res) => {
+  try {
+    const employees = await Users.find({ role: "employee" });
+    if (!employees)
+      return res.status(404).json({ message: "No Employees Found" });
+
+    return res.status(200).json(employees);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
