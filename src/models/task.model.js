@@ -15,12 +15,17 @@ const taskSchema = new mongoose.Schema(
       required: true,
     },
     todoCheckList: {
-      type: [String],
+      type: [
+        {
+          text: { type: String, required: true },
+          isCompleted: { type: Boolean, default: false },
+        },
+      ],
       required: true,
     },
   },
   { timestamps: true }
 );
 
-const Tasks = mongoose.model("Task", taskSchema);
-export default Tasks;
+const Task = mongoose.model("Task", taskSchema);
+export default Task;
