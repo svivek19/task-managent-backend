@@ -11,7 +11,17 @@ const taskSchema = new mongoose.Schema(
     },
     dueDate: { type: Date, required: true },
     assignTo: {
-      type: [String],
+      type: [
+        {
+          email: { type: String, required: true },
+          status: {
+            type: String,
+            enum: ["pending", "in-progress", "completed"],
+            default: "pending",
+            required: true,
+          },
+        },
+      ],
       required: true,
     },
     todoCheckList: {
