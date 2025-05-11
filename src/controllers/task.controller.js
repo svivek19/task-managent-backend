@@ -26,3 +26,43 @@ export const getTasks = async (req, res) => {
       .json({ message: "Failed to fetch tasks", error: error.message });
   }
 };
+
+export const getTaskById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const task = await Tasks.find({ _id: id });
+    if (!task) return res.status(404).json({ message: "No tasks found" });
+    return res.status(200).json(task[0]);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to fetch tasks", error: error.message });
+  }
+};
+
+export const updateTask = async (req, res) => {
+  const { id, updatedState } = req.body;
+
+  try {
+    const existingTask = await Tasks.findById(id);
+
+    if (!existingTask) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const updatedTask = await Tasks.findByIdAndUpdate(
+      id,
+      { $set: updatedState },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      message: "Task updated successfully!",
+      task: updatedTask,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to update task", error: error.message });
+  }
+};
