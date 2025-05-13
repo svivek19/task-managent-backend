@@ -54,6 +54,32 @@ export const recentTasks = async (req, res) => {
   }
 };
 
+export const getTasksByAssigneeEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const tasks = await Tasks.find({ "assignTo.email": email });
+
+    if (!tasks || tasks.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No tasks found for this assignee" });
+    }
+
+    return res.status(200).json(tasks);
+  } catch (error) {
+    console.error("Error fetching tasks by assignee:", error.message);
+    return res.status(500).json({
+      message: "Failed to fetch tasks for assignee",
+      error: error.message,
+    });
+  }
+};
+
 export const getTaskById = async (req, res) => {
   const { id } = req.params;
   try {
