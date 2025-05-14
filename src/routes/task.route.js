@@ -18,6 +18,6 @@ taskRouter.get("/get-recent", authMiddleware, recentTasks);
 taskRouter.get("/assignee/:email", getTasksByAssigneeEmail);
 taskRouter.post("/create", authMiddleware, createTask);
 taskRouter.patch("/update", authMiddleware, updateTask);
-taskRouter.delete("/delete", authMiddleware, deleteTask);
+taskRouter.delete("/delete/:id", authMiddleware, deleteTask);
 
 export default taskRouter;

@@ -94,7 +94,7 @@ export const getTaskById = async (req, res) => {
 };
 
 export const deleteTask = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
   try {
     const response = await Tasks.findByIdAndDelete({ _id: id });
     return res.status(200).json({ message: "Task Removed" });
