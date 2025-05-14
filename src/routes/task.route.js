@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createTask,
+  deleteTask,
   getTaskById,
   getTasks,
   getTasksByAssigneeEmail,
@@ -17,5 +18,6 @@ taskRouter.get("/get-recent", authMiddleware, recentTasks);
 taskRouter.get("/assignee/:email", getTasksByAssigneeEmail);
 taskRouter.post("/create", authMiddleware, createTask);
 taskRouter.patch("/update", authMiddleware, updateTask);
+taskRouter.delete("/delete", authMiddleware, deleteTask);
 
 export default taskRouter;
